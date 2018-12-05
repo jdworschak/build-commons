@@ -7,6 +7,10 @@
         <available file="${basedir}/phpunit.xml" property="-phpunit:active"/>
     </target>
 
+    <condition property="phpunit.arg.memory_limit" else="-d memory_limit=1024M" value="-d memory_limit=${phpunit.memory_limit}">
+        <isset property="phpunit.memory_limit" />
+    </condition>
+
     <condition property="phpunit.arg.coverage.clover" else="" value="--coverage-clover ${logdir}/clover.xml">
         <istrue value="${phpunit.coverage.clover}" />
     </condition>
@@ -33,8 +37,7 @@
 
     <target name="phpunit" extensionOf="-test-unit:main~hook" depends="-phpunit:check" if="-phpunit:active">
         <exec executable="${bindir}/phpunit" failonerror="${test-unit.fail-on-violation}" dir="${basedir}">
-            <arg value="-d" />
-            <arg value="memory_limit=1024M" />
+            <arg line="${phpunit.arg.memory_limit}" />
             <arg value="--configuration" />
             <arg value="${basedir}/phpunit.xml" />
             <arg value="--log-junit" />
